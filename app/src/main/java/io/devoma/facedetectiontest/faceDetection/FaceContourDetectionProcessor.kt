@@ -8,10 +8,10 @@ import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
 import io.devoma.facedetectiontest.camerax.BaseImageAnalyzer
-import io.devoma.facedetectiontest.camerax.GraphicOverlay
+import io.devoma.facedetectiontest.views.OvalGraphicOverlay
 import java.io.IOException
 
-class FaceContourDetectionProcessor(private val view: GraphicOverlay) :
+class FaceContourDetectionProcessor(private val view: OvalGraphicOverlay) :
     BaseImageAnalyzer<List<Face>>() {
 
     private val realTimeOpts = FaceDetectorOptions.Builder()
@@ -23,7 +23,7 @@ class FaceContourDetectionProcessor(private val view: GraphicOverlay) :
 
     private val detector = FaceDetection.getClient(realTimeOpts)
 
-    override val graphicOverlay: GraphicOverlay
+    override val graphicOverlay: OvalGraphicOverlay
         get() = view
 
     override fun detectInImage(image: InputImage): Task<List<Face>> {
@@ -40,14 +40,16 @@ class FaceContourDetectionProcessor(private val view: GraphicOverlay) :
 
     override fun onSuccess(
         results: List<Face>,
-        graphicOverlay: GraphicOverlay,
+        graphicOverlay: OvalGraphicOverlay,
         rect: Rect
     ) {
         graphicOverlay.clear()
-        results.forEach {
-            val faceGraphic = FaceContourGraphic(graphicOverlay, it, rect)
-            graphicOverlay.add(faceGraphic)
-        }
+        graphicOverlay.onFaceDetected(results, rect)
+        // TODO(Uncomment the following to display face contours or remove if not needed)
+//        results.forEach {
+//            val faceGraphic = FaceContourGraphic(graphicOverlay, it, rect)
+//            graphicOverlay.add(faceGraphic)
+//        }
         graphicOverlay.postInvalidate()
     }
 

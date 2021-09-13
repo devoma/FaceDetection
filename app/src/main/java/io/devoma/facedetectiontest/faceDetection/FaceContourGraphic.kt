@@ -4,13 +4,13 @@ import android.graphics.*
 import androidx.annotation.ColorInt
 import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceContour
-import io.devoma.facedetectiontest.camerax.GraphicOverlay
+import io.devoma.facedetectiontest.views.OvalGraphicOverlay
 
 class FaceContourGraphic(
-    overlay: GraphicOverlay,
+    private val overlay: OvalGraphicOverlay,
     private val face: Face,
     private val imageRect: Rect
-) : GraphicOverlay.Graphic(overlay) {
+) : OvalGraphicOverlay.Graphic() {
 
     private val facePositionPaint: Paint
     private val idPaint: Paint
@@ -38,13 +38,13 @@ class FaceContourGraphic(
         contour?.points?.forEachIndexed { index, pointF ->
             if (index == 0) {
                 path.moveTo(
-                    translateX(pointF.x),
-                    translateY(pointF.y)
+                    overlay.translateX(pointF.x),
+                    overlay.translateY(pointF.y)
                 )
             }
             path.lineTo(
-                translateX(pointF.x),
-                translateY(pointF.y)
+                overlay.translateX(pointF.x),
+                overlay.translateY(pointF.y)
             )
         }
         val paint = Paint().apply {
@@ -57,7 +57,7 @@ class FaceContourGraphic(
 
     override fun draw(canvas: Canvas?) {
 
-        val rect = calculateRect(
+        val rect = overlay.calculateRect(
             imageRect.height().toFloat(),
             imageRect.width().toFloat(),
             face.boundingBox
@@ -68,8 +68,8 @@ class FaceContourGraphic(
 
         contours.forEach {
             it.points.forEach { point ->
-                val px = translateX(point.x)
-                val py = translateY(point.y)
+                val px = overlay.translateX(point.x)
+                val py = overlay.translateY(point.y)
                 canvas?.drawCircle(px, py, FACE_POSITION_RADIUS, facePositionPaint)
             }
         }

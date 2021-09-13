@@ -1,10 +1,11 @@
 package io.devoma.facedetectiontest
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import io.devoma.facedetectiontest.camerax.CameraManager
@@ -24,16 +25,34 @@ class MainActivity : AppCompatActivity() {
             cameraManager.startCamera()
         } else {
             ActivityCompat.requestPermissions(
-                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
+                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
+            )
         }
+        setOverlayGraphicPosition()
+
+        graphicOverlay.onFaceDetected()
+            .observe(this, { faceDetected ->
+                val stringResource = if (faceDetected) {
+                    R.string.make_sure_your_face_is_within_the_circle
+                } else {
+                    R.string.no_face_detected
+                }
+                message.text = resources.getString(stringResource)
+            })
+        graphicOverlay.onFaceDetectedInBounds()
+            .observe(this, { faceDetectedInBounds ->
+                if (faceDetectedInBounds) {
+                    message.text = resources.getString(R.string.point_your_nose_to_the_square)
+                }
+            })
     }
 
     private fun createCameraManager() {
         cameraManager = CameraManager(
-            this,
-            viewFinder,
-            this,
-            graphicOverlay_finder
+            context = this,
+            finderView = viewFinder,
+            lifecycleOwner = this,
+            graphicOverlay = graphicOverlay
         )
     }
 
@@ -50,11 +69,30 @@ class MainActivity : AppCompatActivity() {
             if (allPermissionsGranted()) {
                 cameraManager.startCamera()
             } else {
-                Toast.makeText(this,
+                Toast.makeText(
+                    this,
                     "Permissions not granted by the user.",
-                    Toast.LENGTH_SHORT).show()
+                    Toast.LENGTH_SHORT
+                ).show()
                 finish()
             }
+        }
+    }
+
+    // TODO(Remove this method or change as needed)
+    private fun setOverlayGraphicPosition() {
+        graphicOverlay.run {
+            noFaceDetectedColor = Color.TRANSPARENT // Default value is transparent as well
+            faceDetectedColor = Color.RED // Default value is red as well
+            faceDetectedInBoundsColor = Color.GREEN // Default value is green as well
+            areaHeight = 1000F
+            areaWidth = 800F
+            areaLeft = 120F
+            areaTop = 500F
+            noseTop = 800F
+            noseLeft = 400F
+            noseHeight = 60F
+            noseWidth = 60F
         }
     }
 

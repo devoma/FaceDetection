@@ -11,6 +11,7 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import io.devoma.facedetectiontest.faceDetection.FaceContourDetectionProcessor
+import io.devoma.facedetectiontest.views.OvalGraphicOverlay
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -18,7 +19,7 @@ class CameraManager(
     private val context: Context,
     private val finderView: PreviewView,
     private val lifecycleOwner: LifecycleOwner,
-    private val graphicOverlay: GraphicOverlay
+    private val graphicOverlay: OvalGraphicOverlay
 ) {
 
     private var preview: Preview? = null
