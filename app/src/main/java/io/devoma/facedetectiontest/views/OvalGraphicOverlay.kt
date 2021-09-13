@@ -212,6 +212,19 @@ class OvalGraphicOverlay(context: Context, attrs: AttributeSet?) : View(context,
     fun setFaceDetected(faceDetected: Boolean) {
         if (faceDetected) {
             ovalPaint.color = faceDetectedColor
+        } else {
+            ovalPaint.color = noFaceDetectedColor
+        }
+        postInvalidate()
+        onFaceDetected.value = faceDetected
+    }
+
+    /**
+     * Set this true when a face is found to be with in the oval frame boundaries.
+     */
+    fun setFaceDetectedInBounds(faceInBounds: Boolean) {
+        if (faceInBounds) {
+            ovalPaint.color = faceDetectedInBoundsColor
             add(
                 NoseFrameGraphic(
                     noseLeft = noseLeft,
@@ -224,19 +237,6 @@ class OvalGraphicOverlay(context: Context, attrs: AttributeSet?) : View(context,
         } else {
             ovalPaint.color = noFaceDetectedColor
             clear()
-        }
-        postInvalidate()
-        onFaceDetected.value = faceDetected
-    }
-
-    /**
-     * Set this true when a face is found to be with in the oval frame boundaries.
-     */
-    fun setFaceDetectedInBounds(faceInBounds: Boolean) {
-        if (faceInBounds) {
-            ovalPaint.color = faceDetectedInBoundsColor
-        } else {
-            ovalPaint.color = noFaceDetectedColor
         }
         postInvalidate()
         onFaceDetectedInBounds.value = faceInBounds
