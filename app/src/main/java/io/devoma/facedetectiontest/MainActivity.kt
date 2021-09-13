@@ -9,15 +9,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import io.devoma.facedetectiontest.camerax.CameraManager
-import kotlinx.android.synthetic.main.activity_main.*
-
+import io.devoma.facedetectiontest.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
-
+    private val binding by lazy {
+        ActivityMainBinding.inflate(layoutInflater)
+    }
     private lateinit var cameraManager: CameraManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
 
         createCameraManager()
 
@@ -30,30 +31,31 @@ class MainActivity : AppCompatActivity() {
         }
         setOverlayGraphicPosition()
 
-        graphicOverlay.onFaceDetected()
+        binding.graphicOverlay.onFaceDetected()
             .observe(this, {
                 if (it.first) {
-                    message.text = resources.getString(
+                    binding.message.text = resources.getString(
                         R.string.make_sure_your_face_is_within_the_circle
                     )
                     // TODO Face is detected. Do anything with mediaImageBitmap here
                     val mediaImageBitmap = it.second
                 } else {
-                    message.text = resources.getString(R.string.no_face_detected)
+                    binding.message.text = resources.getString(R.string.no_face_detected)
                 }
             })
-        graphicOverlay.onFaceDetectedInBounds()
+        binding.graphicOverlay.onFaceDetectedInBounds()
             .observe(this, {
                 if (it.first) {
-                    message.text = resources.getString(R.string.point_your_nose_to_the_square)
+                    binding.message.text =
+                        resources.getString(R.string.point_your_nose_to_the_square)
                     // TODO Face is detected. Do anything with mediaImageBitmap here
                     val mediaImageBitmap = it.second
                 }
             })
-        graphicOverlay.onNoseDetectedInBounds()
+        binding.graphicOverlay.onNoseDetectedInBounds()
             .observe(this, {
                 if (it.first) {
-                    message.text = resources.getString(R.string.yay_nose_detected)
+                    binding.message.text = resources.getString(R.string.yay_nose_detected)
                 }
             })
     }
@@ -61,9 +63,9 @@ class MainActivity : AppCompatActivity() {
     private fun createCameraManager() {
         cameraManager = CameraManager(
             context = this,
-            finderView = viewFinder,
+            finderView = binding.viewFinder,
             lifecycleOwner = this,
-            graphicOverlay = graphicOverlay
+            graphicOverlay = binding.graphicOverlay
         )
     }
 
@@ -92,7 +94,7 @@ class MainActivity : AppCompatActivity() {
 
     // TODO(Remove this method or change as needed)
     private fun setOverlayGraphicPosition() {
-        graphicOverlay.run {
+        binding.graphicOverlay.run {
             noFaceDetectedColor = Color.TRANSPARENT // Default value is transparent as well
             faceDetectedColor = Color.RED // Default value is red as well
             faceDetectedInBoundsColor = Color.GREEN // Default value is green as well

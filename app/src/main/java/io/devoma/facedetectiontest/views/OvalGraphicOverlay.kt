@@ -13,8 +13,6 @@ import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceContour
 import io.devoma.facedetectiontest.R
 import io.devoma.facedetectiontest.utils.toBitMap
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlin.math.ceil
 
 /**
