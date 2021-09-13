@@ -1,4 +1,4 @@
-package io.devoma.facetedectiontest.camerax
+package io.devoma.facedetectiontest.camerax
 
 import android.content.Context
 import android.util.DisplayMetrics
@@ -10,7 +10,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import io.devoma.facetedectiontest.faceDetection.FaceContourDetectionProcessor
+import io.devoma.facedetectiontest.faceDetection.FaceContourDetectionProcessor
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 

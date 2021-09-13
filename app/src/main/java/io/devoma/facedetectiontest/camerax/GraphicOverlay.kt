@@ -1,4 +1,4 @@
-package io.devoma.facetedectiontest.camerax
+package io.devoma.facedetectiontest.camerax
 
 import android.content.Context
 import android.content.res.Configuration

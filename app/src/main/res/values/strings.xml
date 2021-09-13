@@ -1,3 +1,6 @@
 <resources>
-    <string name="app_name">Face Tedection Test</string>
+    <string name="app_name">Face Detection Test</string>
+    <string name="no_face_detected">No face detected ☹</string>
+    <string name="make_sure_your_face_is_within_the_circle">Make sure your face is within the circle</string>
+    <string name="point_your_nose_to_the_square">Point your nose to the square</string>
 </resources>

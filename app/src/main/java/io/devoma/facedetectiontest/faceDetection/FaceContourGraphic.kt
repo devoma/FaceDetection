@@ -1,10 +1,10 @@
-package io.devoma.facetedectiontest.faceDetection
+package io.devoma.facedetectiontest.faceDetection
 
 import android.graphics.*
 import androidx.annotation.ColorInt
 import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceContour
-import io.devoma.facetedectiontest.camerax.GraphicOverlay
+import io.devoma.facedetectiontest.camerax.GraphicOverlay
 
 class FaceContourGraphic(
     overlay: GraphicOverlay,

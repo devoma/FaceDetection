@@ -1,4 +1,4 @@
-package io.devoma.facetedectiontest.faceDetection
+package io.devoma.facedetectiontest.faceDetection
 
 import android.graphics.Rect
 import android.util.Log
@@ -7,8 +7,8 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
-import io.devoma.facetedectiontest.camerax.BaseImageAnalyzer
-import io.devoma.facetedectiontest.camerax.GraphicOverlay
+import io.devoma.facedetectiontest.camerax.BaseImageAnalyzer
+import io.devoma.facedetectiontest.camerax.GraphicOverlay
 import java.io.IOException
 
 class FaceContourDetectionProcessor(private val view: GraphicOverlay) :

@@ -1,4 +1,4 @@
-package io.devoma.facetedectiontest
+package io.devoma.facedetectiontest
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -7,7 +7,7 @@ import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import io.devoma.facetedectiontest.camerax.CameraManager
+import io.devoma.facedetectiontest.camerax.CameraManager
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
