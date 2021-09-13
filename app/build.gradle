@@ -1,14 +1,13 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-android-extensions'
 }
 
 android {
     compileSdk 31
 
     defaultConfig {
-        applicationId "io.devoma.facetedectiontest"
+        applicationId "io.devoma.facedetectiontest"
         minSdk 22
         targetSdk 31
         versionCode 1
@@ -22,6 +21,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    buildFeatures {
+        viewBinding true
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -43,6 +45,5 @@ dependencies {
     implementation "androidx.camera:camera-lifecycle:1.0.1"
     implementation "androidx.camera:camera-view:1.0.0-alpha28"
     implementation 'com.google.mlkit:face-detection:16.1.2'
-
-
+    testImplementation 'junit:junit:4.13.2'
 }

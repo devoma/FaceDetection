@@ -1,17 +1,17 @@
-package io.devoma.facetedectiontest.camerax
+package io.devoma.facedetectiontest.camerax
 
-import android.annotation.SuppressLint
-import android.graphics.*
+import android.media.Image
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.google.android.gms.tasks.Task
 import com.google.mlkit.vision.common.InputImage
+import io.devoma.facedetectiontest.views.OvalGraphicOverlay
 
 abstract class BaseImageAnalyzer<T> : ImageAnalysis.Analyzer {
 
-    abstract val graphicOverlay: GraphicOverlay
+    abstract val graphicOverlay: OvalGraphicOverlay
 
-    @SuppressLint("UnsafeExperimentalUsageError")
+    @androidx.camera.core.ExperimentalGetImage
     override fun analyze(imageProxy: ImageProxy) {
         val mediaImage = imageProxy.image
         mediaImage?.let {
@@ -20,7 +20,7 @@ abstract class BaseImageAnalyzer<T> : ImageAnalysis.Analyzer {
                     onSuccess(
                         results,
                         graphicOverlay,
-                        it.cropRect
+                        it
                     )
                 }
                 .addOnFailureListener {
@@ -40,8 +40,8 @@ abstract class BaseImageAnalyzer<T> : ImageAnalysis.Analyzer {
 
     protected abstract fun onSuccess(
         results: T,
-        graphicOverlay: GraphicOverlay,
-        rect: Rect
+        graphicOverlay: OvalGraphicOverlay,
+        image: Image
     )
 
     protected abstract fun onFailure(e: Exception)

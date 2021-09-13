@@ -1,4 +1,4 @@
-package io.devoma.facetedectiontest
+package io.devoma.facedetectiontest
 
 import org.junit.Test
 

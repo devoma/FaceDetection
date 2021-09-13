@@ -1,4 +1,4 @@
-package io.devoma.facetedectiontest.camerax
+package io.devoma.facedetectiontest.camerax
 
 import android.content.Context
 import android.content.res.Configuration
@@ -11,6 +11,10 @@ import android.view.View
 import androidx.camera.core.CameraSelector
 import kotlin.math.ceil
 
+/**
+ * Google's ML Kit Graphic Overlay
+ * TODO (Remove this if not needed)
+ */
 open class GraphicOverlay(context: Context?, attrs: AttributeSet?) :
     View(context, attrs) {
 

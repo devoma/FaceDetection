@@ -1,17 +1,17 @@
-package io.devoma.facetedectiontest.faceDetection
+package io.devoma.facedetectiontest.faceDetection
 
-import android.graphics.Rect
+import android.media.Image
 import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
-import io.devoma.facetedectiontest.camerax.BaseImageAnalyzer
-import io.devoma.facetedectiontest.camerax.GraphicOverlay
+import io.devoma.facedetectiontest.camerax.BaseImageAnalyzer
+import io.devoma.facedetectiontest.views.OvalGraphicOverlay
 import java.io.IOException
 
-class FaceContourDetectionProcessor(private val view: GraphicOverlay) :
+class FaceContourDetectionProcessor(private val view: OvalGraphicOverlay) :
     BaseImageAnalyzer<List<Face>>() {
 
     private val realTimeOpts = FaceDetectorOptions.Builder()
@@ -23,7 +23,7 @@ class FaceContourDetectionProcessor(private val view: GraphicOverlay) :
 
     private val detector = FaceDetection.getClient(realTimeOpts)
 
-    override val graphicOverlay: GraphicOverlay
+    override val graphicOverlay: OvalGraphicOverlay
         get() = view
 
     override fun detectInImage(image: InputImage): Task<List<Face>> {
@@ -40,14 +40,16 @@ class FaceContourDetectionProcessor(private val view: GraphicOverlay) :
 
     override fun onSuccess(
         results: List<Face>,
-        graphicOverlay: GraphicOverlay,
-        rect: Rect
+        graphicOverlay: OvalGraphicOverlay,
+        image: Image
     ) {
         graphicOverlay.clear()
-        results.forEach {
-            val faceGraphic = FaceContourGraphic(graphicOverlay, it, rect)
-            graphicOverlay.add(faceGraphic)
-        }
+        graphicOverlay.onFaceDetected(results, image)
+        // TODO(Uncomment the following to display face contours or remove if not needed)
+//        results.forEach {
+//            val faceGraphic = FaceContourGraphic(graphicOverlay, it, image.cropRect)
+//            graphicOverlay.add(faceGraphic)
+//        }
         graphicOverlay.postInvalidate()
     }
 
