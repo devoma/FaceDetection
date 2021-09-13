@@ -1,6 +1,6 @@
 package io.devoma.facedetectiontest.faceDetection
 
-import android.graphics.Rect
+import android.media.Image
 import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.mlkit.vision.common.InputImage
@@ -41,13 +41,13 @@ class FaceContourDetectionProcessor(private val view: OvalGraphicOverlay) :
     override fun onSuccess(
         results: List<Face>,
         graphicOverlay: OvalGraphicOverlay,
-        rect: Rect
+        image: Image
     ) {
         graphicOverlay.clear()
-        graphicOverlay.onFaceDetected(results, rect)
+        graphicOverlay.onFaceDetected(results, image)
         // TODO(Uncomment the following to display face contours or remove if not needed)
 //        results.forEach {
-//            val faceGraphic = FaceContourGraphic(graphicOverlay, it, rect)
+//            val faceGraphic = FaceContourGraphic(graphicOverlay, it, image.cropRect)
 //            graphicOverlay.add(faceGraphic)
 //        }
         graphicOverlay.postInvalidate()

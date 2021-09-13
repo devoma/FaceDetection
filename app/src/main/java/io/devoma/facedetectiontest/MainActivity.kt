@@ -31,18 +31,29 @@ class MainActivity : AppCompatActivity() {
         setOverlayGraphicPosition()
 
         graphicOverlay.onFaceDetected()
-            .observe(this, { faceDetected ->
-                val stringResource = if (faceDetected) {
-                    R.string.make_sure_your_face_is_within_the_circle
+            .observe(this, {
+                if (it.first) {
+                    message.text = resources.getString(
+                        R.string.make_sure_your_face_is_within_the_circle
+                    )
+                    // TODO Face is detected. Do anything with mediaImageBitmap here
+                    val mediaImageBitmap = it.second
                 } else {
-                    R.string.no_face_detected
+                    message.text = resources.getString(R.string.no_face_detected)
                 }
-                message.text = resources.getString(stringResource)
             })
         graphicOverlay.onFaceDetectedInBounds()
-            .observe(this, { faceDetectedInBounds ->
-                if (faceDetectedInBounds) {
+            .observe(this, {
+                if (it.first) {
                     message.text = resources.getString(R.string.point_your_nose_to_the_square)
+                    // TODO Face is detected. Do anything with mediaImageBitmap here
+                    val mediaImageBitmap = it.second
+                }
+            })
+        graphicOverlay.onNoseDetectedInBounds()
+            .observe(this, {
+                if (it.first) {
+                    message.text = resources.getString(R.string.yay_nose_detected)
                 }
             })
     }
@@ -91,8 +102,8 @@ class MainActivity : AppCompatActivity() {
             areaTop = 500F
             noseTop = 800F
             noseLeft = 400F
-            noseHeight = 60F
-            noseWidth = 60F
+            noseHeight = 100F
+            noseWidth = 100F
         }
     }
 
