@@ -17,8 +17,6 @@ class FaceContourDetectionProcessor(private val view: OvalGraphicOverlay) :
     private val realTimeOpts = FaceDetectorOptions.Builder()
         .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
         .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
-        .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
-//        .enableTracking()
         .build()
 
     private val detector = FaceDetection.getClient(realTimeOpts)
@@ -45,11 +43,7 @@ class FaceContourDetectionProcessor(private val view: OvalGraphicOverlay) :
     ) {
         graphicOverlay.clear()
         graphicOverlay.onFaceDetected(results, image)
-        // TODO(Uncomment the following to display face contours or remove if not needed)
-//        results.forEach {
-//            val faceGraphic = FaceContourGraphic(graphicOverlay, it, image.cropRect)
-//            graphicOverlay.add(faceGraphic)
-//        }
+
         graphicOverlay.postInvalidate()
     }
 

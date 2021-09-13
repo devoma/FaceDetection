@@ -5,9 +5,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 
-/**
- * Draws a nose frame rect when a face is detected within the [OvalGraphicOverlay].
- */
 class NoseFrameGraphic(
     private val noseRect: Rect,
     strokeWidth: Float

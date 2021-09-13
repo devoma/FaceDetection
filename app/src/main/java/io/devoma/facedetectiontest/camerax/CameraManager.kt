@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.DisplayMetrics
 import android.util.Log
 import android.util.Size
-import android.view.ScaleGestureDetector
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -65,28 +64,10 @@ class CameraManager(
         }
     }
 
-    private fun setUpPinchToZoom() {
-        val listener = object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
-            override fun onScale(detector: ScaleGestureDetector): Boolean {
-                val currentZoomRatio: Float = camera?.cameraInfo?.zoomState?.value?.zoomRatio ?: 1F
-                val delta = detector.scaleFactor
-                camera?.cameraControl?.setZoomRatio(currentZoomRatio * delta)
-                return true
-            }
-        }
-        val scaleGestureDetector = ScaleGestureDetector(context, listener)
-        finderView.setOnTouchListener { _, event ->
-            finderView.post {
-                scaleGestureDetector.onTouchEvent(event)
-            }
-            return@setOnTouchListener true
-        }
-    }
-
     fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
         cameraProviderFuture.addListener(
-            Runnable {
+            {
                 cameraProvider = cameraProviderFuture.get()
                 preview = Preview.Builder().build()
 
@@ -108,7 +89,6 @@ class CameraManager(
                         .setTargetResolution(Size(metrics.widthPixels, metrics.heightPixels))
                         .build()
 
-                setUpPinchToZoom()
                 setCameraConfig(cameraProvider, cameraSelector)
 
             }, ContextCompat.getMainExecutor(context)

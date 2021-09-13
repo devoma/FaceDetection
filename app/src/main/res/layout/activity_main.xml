@@ -14,17 +14,7 @@
     <io.devoma.facedetectiontest.views.OvalGraphicOverlay
         android:id="@+id/graphicOverlay"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:areaHeight="360"
-        app:areaLeft="185"
-        app:areaTop="60"
-        app:areaWidth="270"
-        app:noseHeight="20"
-        app:noseLeft="241"
-        app:noseStrokeSize="4dp"
-        app:noseTop="181"
-        app:noseWidth="20"
-        app:strokeSize="16dp" />
+        android:layout_height="match_parent" />
 
     <TextView
         android:id="@+id/message"

@@ -11,15 +11,17 @@ import androidx.camera.core.CameraSelector
 import androidx.lifecycle.MutableLiveData
 import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceContour
-import io.devoma.facedetectiontest.R
 import io.devoma.facedetectiontest.utils.toBitMap
 import kotlin.math.ceil
 
 /**
  * Displays an Oval shaped frame
  */
-class OvalGraphicOverlay(context: Context, attrs: AttributeSet?) : View(context, attrs) {
-    // Oval frame getters and setters
+class OvalGraphicOverlay(
+    context: Context,
+    attrs: AttributeSet?
+) : View(context, attrs) {
+
     var areaLeft = 185F
         set(value) {
             field = value
@@ -123,29 +125,6 @@ class OvalGraphicOverlay(context: Context, attrs: AttributeSet?) : View(context,
     private val onNoseDetectedInBounds = MutableLiveData<Pair<Boolean, Bitmap>>()
 
     init {
-        context.obtainStyledAttributes(
-            attrs, R.styleable.OvalGraphicOverlay
-        ).apply {
-            // Oval frame
-            areaLeft = getFloat(R.styleable.OvalGraphicOverlay_areaLeft, areaLeft)
-            areaTop = getFloat(R.styleable.OvalGraphicOverlay_areaTop, areaTop)
-            areaWidth = getFloat(R.styleable.OvalGraphicOverlay_areaWidth, areaWidth)
-            areaHeight = getFloat(R.styleable.OvalGraphicOverlay_areaHeight, areaHeight)
-            strokeWidth = getDimension(R.styleable.OvalGraphicOverlay_strokeSize, strokeWidth)
-            minFaceAreaPercent = getFloat(
-                R.styleable.OvalGraphicOverlay_minFaceAreaPercent, minFaceAreaPercent
-            )
-            // Nose frame
-            noseLeft = getFloat(R.styleable.OvalGraphicOverlay_noseLeft, noseLeft)
-            noseTop = getFloat(R.styleable.OvalGraphicOverlay_noseTop, noseTop)
-            noseWidth = getFloat(R.styleable.OvalGraphicOverlay_noseWidth, noseWidth)
-            noseHeight = getFloat(R.styleable.OvalGraphicOverlay_noseHeight, noseHeight)
-            noseStrokeWidth =
-                getDimension(R.styleable.OvalGraphicOverlay_noseStrokeSize, noseStrokeWidth)
-            recycle()
-        }
-
-        // See: https://developer.android.com/reference/android/graphics/Rect
         require(areaLeft <= (areaLeft + areaWidth))
         require(areaTop <= (areaTop + areaHeight))
 

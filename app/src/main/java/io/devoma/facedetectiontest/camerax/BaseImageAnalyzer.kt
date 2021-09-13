@@ -14,13 +14,13 @@ abstract class BaseImageAnalyzer<T> : ImageAnalysis.Analyzer {
     @androidx.camera.core.ExperimentalGetImage
     override fun analyze(imageProxy: ImageProxy) {
         val mediaImage = imageProxy.image
-        mediaImage?.let {
-            detectInImage(InputImage.fromMediaImage(it, imageProxy.imageInfo.rotationDegrees))
+        mediaImage?.let { image ->
+            detectInImage(InputImage.fromMediaImage(image, imageProxy.imageInfo.rotationDegrees))
                 .addOnSuccessListener { results ->
                     onSuccess(
                         results,
                         graphicOverlay,
-                        it
+                        image
                     )
                 }
                 .addOnFailureListener {
