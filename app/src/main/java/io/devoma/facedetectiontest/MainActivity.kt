@@ -2,14 +2,17 @@ package io.devoma.facedetectiontest
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.os.Bundle
+import android.util.DisplayMetrics
+import android.util.Size
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import io.devoma.facedetectiontest.camerax.CameraManager
 import io.devoma.facedetectiontest.databinding.ActivityMainBinding
+import io.devoma.facedetectiontest.misc.toPx
+
 class MainActivity : AppCompatActivity() {
     private val binding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
@@ -71,7 +74,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
-            baseContext, it) == PackageManager.PERMISSION_GRANTED
+            baseContext, it
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     override fun onRequestPermissionsResult(
@@ -92,20 +96,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // TODO(Remove this method or change as needed)
+    // TODO(Change as required. Do not remove.)
     private fun setOverlayGraphicPosition() {
+        val metrics = DisplayMetrics().apply {
+            windowManager.defaultDisplay.getRealMetrics(this)
+        }
+        val deviceWidth = metrics.widthPixels
+        val deviceHeight = metrics.heightPixels
+
+        val noseFrameLeft = 171F // TODO Fetch this from server
+        val noseFrameTop = 251F // TODO Fetch this from server
         binding.graphicOverlay.run {
-            noFaceDetectedColor = Color.TRANSPARENT // Default value is transparent as well
-            faceDetectedColor = Color.RED // Default value is red as well
-            faceDetectedInBoundsColor = Color.GREEN // Default value is green as well
-            areaHeight = 1000F
-            areaWidth = 800F
-            areaLeft = 120F
-            areaTop = 500F
-            noseTop = 800F
-            noseLeft = 400F
-            noseHeight = 100F
-            noseWidth = 100F
+            areaWidth = deviceWidth * OVAL_FRAME_WIDTH_MULTIPLIER
+            areaHeight = areaWidth * OVAL_FRAME_HEIGHT_MULTIPLIER // 5:4 aspect ratio
+            areaLeft = deviceWidth * OVAL_FRAME_LEFT_MULTIPLIER
+            areaTop = deviceHeight * OVAL_FRAME_TOP_MULTIPLIER
+            noseTop = deviceHeight / (SERVER_DEVICE_RESOLUTION.height / noseFrameTop)
+            noseLeft = deviceWidth / (SERVER_DEVICE_RESOLUTION.width / noseFrameLeft)
+            noseHeight = 20.toPx
+            noseWidth = 20.toPx
         }
     }
 
@@ -114,5 +123,11 @@ class MainActivity : AppCompatActivity() {
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+
+        private const val OVAL_FRAME_WIDTH_MULTIPLIER = 3F / 4F
+        private const val OVAL_FRAME_HEIGHT_MULTIPLIER = 5F / 4F
+        private const val OVAL_FRAME_LEFT_MULTIPLIER = 1F / 8F
+        private const val OVAL_FRAME_TOP_MULTIPLIER = 1F / 5F
+        private val SERVER_DEVICE_RESOLUTION = Size(480, 640)
     }
 }
