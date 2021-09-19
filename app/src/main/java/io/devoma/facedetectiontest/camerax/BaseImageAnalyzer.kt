@@ -1,6 +1,5 @@
 package io.devoma.facedetectiontest.camerax
 
-import android.media.Image
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.google.android.gms.tasks.Task
@@ -20,7 +19,7 @@ abstract class BaseImageAnalyzer<T> : ImageAnalysis.Analyzer {
                     onSuccess(
                         results,
                         graphicOverlay,
-                        image
+                        imageProxy
                     )
                 }
                 .addOnFailureListener {
@@ -41,7 +40,7 @@ abstract class BaseImageAnalyzer<T> : ImageAnalysis.Analyzer {
     protected abstract fun onSuccess(
         results: T,
         graphicOverlay: OvalGraphicOverlay,
-        image: Image
+        imageProxy: ImageProxy
     )
 
     protected abstract fun onFailure(e: Exception)

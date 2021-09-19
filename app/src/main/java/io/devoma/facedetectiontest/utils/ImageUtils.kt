@@ -19,14 +19,13 @@ package io.devoma.facedetectiontest.utils
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ImageFormat
-import android.graphics.Matrix
 import android.graphics.Rect
 import android.media.Image
 import android.renderscript.*
 import java.nio.ByteBuffer
 
 /**
- * Helper class used to efficiently convert a [Media.Image] object from
+ * Helper class used to efficiently convert a [Image] object from
  * [ImageFormat.YUV_420_888] format to an RGB [Bitmap] object.
  *
  * The [yuvToRgb] method is able to achieve the same FPS as the CameraX image
@@ -197,27 +196,4 @@ class YuvToRgbConverter(context: Context) {
             }
         }
     }
-}
-
-/**
- * Returns a [Bitmap] for [Media.Image] using [YuvToRgbConverter]
- */
-fun Image.toBitMap(context: Context): Bitmap {
-    val yuvToRgbConverter = YuvToRgbConverter(context)
-    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-    yuvToRgbConverter.yuvToRgb(this, bitmap)
-    return bitmap
-}
-
-/**
- * Rotate a bitmap by given [degrees]
- */
-fun Bitmap.rotate(degrees: Float): Bitmap? {
-    val matrix = Matrix()
-    matrix.preRotate(degrees)
-    val rotatedBitmap = Bitmap.createBitmap(
-        this, 0, 0, width, height, matrix, true
-    )
-    recycle()
-    return rotatedBitmap
 }

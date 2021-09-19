@@ -1,18 +1,48 @@
 package io.devoma.facedetectiontest.faceDetection
 
-import android.media.Image
 import android.util.Log
+import androidx.camera.core.ImageProxy
 import com.google.android.gms.tasks.Task
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.Face
+import com.google.mlkit.vision.face.FaceContour
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
 import io.devoma.facedetectiontest.camerax.BaseImageAnalyzer
 import io.devoma.facedetectiontest.views.OvalGraphicOverlay
+import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
 import java.io.IOException
 
+/**
+ * Interface for Face detection
+ */
+interface FaceAnalyzer {
+    /**
+     * Returns an Observable that emits when no face is detected. The emission is an [ImageProxy].
+     */
+    fun onNothing(): Observable<ImageProxy>
+
+    /**
+     * Returns an Observable that emits when a face is detected. The emission is an [ImageProxy].
+     */
+    fun onFaceDetected(): Observable<ImageProxy>
+
+    /**
+     * Returns an Observable that emits when a face is enclosed in oval frame bounds.
+     * The emission is an [ImageProxy].
+     */
+    fun onFaceDetectedInBounds(): Observable<ImageProxy>
+
+    /**
+     * Returns an Observable that emits when nose tip is enclosed in nose frame bounds.
+     * The emission is an [ImageProxy].
+     */
+    fun onNoseDetectedInBounds(): Observable<ImageProxy>
+}
+
 class FaceContourDetectionProcessor(private val view: OvalGraphicOverlay) :
-    BaseImageAnalyzer<List<Face>>() {
+    BaseImageAnalyzer<List<Face>>(), FaceAnalyzer {
 
     private val realTimeOpts = FaceDetectorOptions.Builder()
         .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
@@ -20,6 +50,11 @@ class FaceContourDetectionProcessor(private val view: OvalGraphicOverlay) :
         .build()
 
     private val detector = FaceDetection.getClient(realTimeOpts)
+
+    private val onNothing = PublishSubject.create<ImageProxy>()
+    private val onFaceDetected = PublishSubject.create<ImageProxy>()
+    private val onFaceDetectedInBounds = PublishSubject.create<ImageProxy>()
+    private val onNoseDetectedInBounds = PublishSubject.create<ImageProxy>()
 
     override val graphicOverlay: OvalGraphicOverlay
         get() = view
@@ -39,11 +74,41 @@ class FaceContourDetectionProcessor(private val view: OvalGraphicOverlay) :
     override fun onSuccess(
         results: List<Face>,
         graphicOverlay: OvalGraphicOverlay,
-        image: Image
+        imageProxy: ImageProxy
     ) {
-        graphicOverlay.clear()
-        graphicOverlay.onFaceDetected(results, image)
+        val isFaceDetected = results.isNotEmpty()
+        var faceDetectedInBounds = false
+        var noseDetectedInBounds = false
 
+        if (isFaceDetected) {
+            onFaceDetected.onNext(imageProxy)
+
+            // Check if face is with in oval frame bounds
+            val face = results.first() // Only single face detection is supported
+            val imageRect = imageProxy.cropRect
+            val faceRect = graphicOverlay.calculateRect(
+                height = imageRect.height().toFloat(),
+                width = imageRect.width().toFloat(),
+                boundingBoxT = face.boundingBox
+            )
+            if (graphicOverlay.getOvalFrameRect().contains(faceRect)) {
+                onFaceDetectedInBounds.onNext(imageProxy)
+                faceDetectedInBounds = true
+            }
+            if (checkNoseEnclosed(face)) {
+                onNoseDetectedInBounds.onNext(imageProxy)
+                noseDetectedInBounds = true
+            }
+        } else {
+            onNothing.onNext(imageProxy)
+        }
+        graphicOverlay.clear()
+
+        graphicOverlay.onFaceDetected(
+            isFaceDetected,
+            faceDetectedInBounds,
+            noseDetectedInBounds
+        )
         graphicOverlay.postInvalidate()
     }
 
@@ -51,8 +116,39 @@ class FaceContourDetectionProcessor(private val view: OvalGraphicOverlay) :
         Log.w(TAG, "Face Detector failed.$e")
     }
 
+    /**
+     * Returns an Observable that emits when no face is detected. The emission is an [ImageProxy].
+     */
+    override fun onNothing(): Observable<ImageProxy> = onNothing
+
+    /**
+     * Returns an Observable that emits when a face is detected. The emission is an [ImageProxy].
+     */
+    override fun onFaceDetected(): Observable<ImageProxy> = onFaceDetected
+
+    /**
+     * Returns an Observable that emits when a face is enclosed in oval frame bounds.
+     * The emission is an [ImageProxy].
+     */
+    override fun onFaceDetectedInBounds(): Observable<ImageProxy> = onFaceDetectedInBounds
+
+    /**
+     * Returns an Observable that emits when nose tip is enclosed in nose frame bounds.
+     * The emission is an [ImageProxy].
+     */
+    override fun onNoseDetectedInBounds(): Observable<ImageProxy> = onNoseDetectedInBounds
+
+    // Returns true if nose tip is enclosed in nose frame
+    private fun checkNoseEnclosed(face: Face): Boolean {
+        val noseBridgeContour = face.getContour(FaceContour.NOSE_BRIDGE)
+        val noseTipF = noseBridgeContour?.points?.last() ?: return false
+        return graphicOverlay.getNoseFrameRect().contains(
+            graphicOverlay.translateX(noseTipF.x).toInt(),
+            graphicOverlay.translateY(noseTipF.y).toInt()
+        )
+    }
+
     companion object {
         private const val TAG = "FaceDetectorProcessor"
     }
-
 }

@@ -4,14 +4,9 @@ import android.content.Context
 import android.content.res.Configuration
 import android.graphics.*
 import android.graphics.drawable.Drawable
-import android.media.Image
 import android.util.AttributeSet
 import android.view.View
 import androidx.camera.core.CameraSelector
-import androidx.lifecycle.MutableLiveData
-import com.google.mlkit.vision.face.Face
-import com.google.mlkit.vision.face.FaceContour
-import io.devoma.facedetectiontest.utils.toBitMap
 import kotlin.math.ceil
 
 /**
@@ -92,12 +87,12 @@ class OvalGraphicOverlay(
             field = value
             postInvalidate()
         }
-    var noseWidth = 100f
+    var noseWidth = 20f
         set(value) {
             field = value
             postInvalidate()
         }
-    var noseHeight = 100f
+    var noseHeight = 20f
         set(value) {
             field = value
             postInvalidate()
@@ -117,12 +112,7 @@ class OvalGraphicOverlay(
     lateinit var processBitmap: Bitmap
     lateinit var processCanvas: Canvas
 
-    private val ovalRect = RectF()
     private val ovalPaint: Paint = Paint()
-
-    private val onFaceDetected = MutableLiveData<Pair<Boolean, Bitmap>>()
-    private val onFaceDetectedInBounds = MutableLiveData<Pair<Boolean, Bitmap>>()
-    private val onNoseDetectedInBounds = MutableLiveData<Pair<Boolean, Bitmap>>()
 
     init {
         require(areaLeft <= (areaLeft + areaWidth))
@@ -137,48 +127,35 @@ class OvalGraphicOverlay(
     }
 
     /**
-     * Returns an MutableLiveData that emits whenever a face is detected.
-     */
-    fun onFaceDetected() = onFaceDetected
-
-    /**
-     * Returns an MutableLiveData that emits when a face is detected with in oval frame
-     */
-    fun onFaceDetectedInBounds() = onFaceDetectedInBounds
-
-    /**
-     * Returns a MutableLiveData that emits when nose is detected with in the nose frame.
-     */
-    fun onNoseDetectedInBounds() = onNoseDetectedInBounds
-
-    /**
      * Called when a face is detected.
      */
-    fun onFaceDetected(results: List<Face>, image: Image?) {
-        val imageRect = image?.cropRect
-        if (results.isNotEmpty()) {
-            val face = results.first() // Only one face can be detected when using contours.
-            setFaceDetected(true)
-            if (imageRect != null) {
-                val imageBitmap = image.toBitMap(context)
-                onFaceDetected.value = Pair(true, imageBitmap)
-                val faceRect = calculateRect(
-                    height = imageRect.height().toFloat(),
-                    width = imageRect.width().toFloat(),
-                    boundingBoxT = face.boundingBox
-                )
-                if (ovalRect.contains(faceRect)) {
-                    setFaceDetectedInBounds(true)
-                    onFaceDetectedInBounds.value = Pair(true, imageBitmap)
-                }
-                if (checkNoseEnclosed(face, calculateNoseRect())) {
-                    onNoseDetectedInBounds.value = Pair(true, imageBitmap)
-                }
-            }
-        } else {
-            setFaceDetectedInBounds(false)
-            setFaceDetected(false)
-        }
+    fun onFaceDetected(
+        faceDetected: Boolean,
+        faceDetectedInBounds: Boolean,
+        noseDetectedInBounds: Boolean
+    ) {
+        setFaceDetected(faceDetected)
+        setFaceDetectedInBounds(faceDetectedInBounds)
+    }
+
+    /**
+     * Returns [RectF] for oval frame
+     */
+    fun getOvalFrameRect() = RectF().apply {
+        top = areaTop
+        left = areaLeft
+        bottom = areaTop + areaHeight
+        right = areaLeft + areaWidth
+    }
+
+    /**
+     * Returns [RectF] for nose frame
+     */
+    fun getNoseFrameRect() = Rect().apply {
+        top = noseTop.toInt()
+        left = noseLeft.toInt()
+        right = (noseWidth + left).toInt()
+        bottom = (noseHeight + top).toInt()
     }
 
     private val ovalShapeDrawable = InvertedRectDrawable()
@@ -195,19 +172,13 @@ class OvalGraphicOverlay(
             alpha = overlayOpacity
             draw(canvas)
         }
-        ovalRect.run {
-            top = areaTop
-            left = areaLeft
-            bottom = areaTop + areaHeight
-            right = areaLeft + areaWidth
-            canvas.drawOval(this, ovalPaint)
-        }
+        canvas.drawOval(getOvalFrameRect(), ovalPaint)
     }
 
     /**
      * Set this true whenever a face is detected.
      */
-    fun setFaceDetected(faceDetected: Boolean) {
+    private fun setFaceDetected(faceDetected: Boolean) {
         if (faceDetected) {
             ovalPaint.color = faceDetectedColor
         } else {
@@ -219,12 +190,12 @@ class OvalGraphicOverlay(
     /**
      * Set this true when a face is found to be with in the oval frame boundaries.
      */
-    fun setFaceDetectedInBounds(faceInBounds: Boolean) {
+    private fun setFaceDetectedInBounds(faceInBounds: Boolean) {
         if (faceInBounds) {
             ovalPaint.color = faceDetectedInBoundsColor
             add(
                 NoseFrameGraphic(
-                    noseRect = calculateNoseRect(),
+                    noseRect = getNoseFrameRect(),
                     strokeWidth = noseStrokeWidth
                 )
             )
@@ -233,29 +204,6 @@ class OvalGraphicOverlay(
             clear()
         }
         postInvalidate()
-    }
-
-    private fun calculateNoseRect() = Rect().apply {
-        top = noseTop.toInt()
-        left = noseLeft.toInt()
-        right = (noseWidth + left).toInt()
-        bottom = (noseHeight + top).toInt()
-    }
-
-    /**
-     * Returns true if nose tip is enclosed in [noseRect]
-     */
-    private fun checkNoseEnclosed(face: Face, noseRect: Rect): Boolean {
-        val noseBridgeContour = face.getContour(FaceContour.NOSE_BRIDGE)
-        val noseTipF = noseBridgeContour?.points?.last() ?: return false
-        val noseRectContainsNoseTip = noseRect.contains(
-            translateX(noseTipF.x).toInt(),
-            translateY(noseTipF.y).toInt()
-        )
-        if (noseRectContainsNoseTip) {
-            return true
-        }
-        return false
     }
 
     fun isFrontMode() = cameraSelector == CameraSelector.LENS_FACING_FRONT
@@ -297,7 +245,7 @@ class OvalGraphicOverlay(
 
         override fun draw(canvas: Canvas) {
             path.reset()
-            path.addOval(ovalRect, Path.Direction.CW)
+            path.addOval(getOvalFrameRect(), Path.Direction.CW)
             path.fillType = Path.FillType.INVERSE_EVEN_ODD
 
             canvas.clipPath(path)
