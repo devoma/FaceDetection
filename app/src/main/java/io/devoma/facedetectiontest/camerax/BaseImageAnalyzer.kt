@@ -4,6 +4,8 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.google.android.gms.tasks.Task
 import com.google.mlkit.vision.common.InputImage
+import io.devoma.facedetectiontest.misc.crop
+import io.devoma.facedetectiontest.misc.toBitMap
 import io.devoma.facedetectiontest.views.OvalGraphicOverlay
 
 abstract class BaseImageAnalyzer<T> : ImageAnalysis.Analyzer {
@@ -14,7 +16,12 @@ abstract class BaseImageAnalyzer<T> : ImageAnalysis.Analyzer {
     override fun analyze(imageProxy: ImageProxy) {
         val mediaImage = imageProxy.image
         mediaImage?.let { image ->
-            detectInImage(InputImage.fromMediaImage(image, imageProxy.imageInfo.rotationDegrees))
+            // TODO This is inefficient. Should use YUV_420_888 format for camera2 API
+            val inputImage = InputImage.fromBitmap(
+                image.toBitMap(graphicOverlay.context).crop(imageProxy.cropRect),
+                imageProxy.imageInfo.rotationDegrees
+            )
+            detectInImage(inputImage)
                 .addOnSuccessListener { results ->
                     onSuccess(
                         results,

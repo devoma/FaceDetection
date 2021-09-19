@@ -10,7 +10,6 @@ import android.util.Log
 import android.util.Size
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.camera.core.ImageProxy
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.android.volley.Request.Method.POST
@@ -35,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var cameraManager: CameraManager
     private lateinit var response: JSONObject
     private lateinit var frameSize: Size
+    private val imageArrayDeque = ArrayDeque<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,7 +76,15 @@ class MainActivity : AppCompatActivity() {
                 binding.message.text = resources.getString(
                     R.string.make_sure_your_face_is_within_the_circle
                 )
+                showPreview(
+                    it.image!!
+                        .toBitMap(this)
+                        .crop(it.cropRect)
+                        .rotate(it.imageInfo.rotationDegrees.toFloat())
+                        .flip()
+                )
             }
+        var noseDetected = false
         disposables += faceAnalyzer.onFaceDetectedInBounds()
             .subscribe {
                 binding.message.text = resources.getString(
@@ -89,12 +97,19 @@ class MainActivity : AppCompatActivity() {
                     .flip()
                     .base64Encoded()
                 // TODO Use frame / Save to list
-
+                if (!noseDetected) {
+                    if (imageArrayDeque.size <= 10) {
+                        imageArrayDeque.add(base64EncodedJpeg)
+                    } else {
+                        imageArrayDeque.removeFirst()
+                    }
+                }
             }
         disposables += faceAnalyzer.onNoseDetectedInBounds()
             .subscribe {
                 binding.message.text = resources.getString(R.string.yay_nose_detected)
                 // TODO Stop camera and verify user
+                noseDetected = true
             }
     }
 
@@ -199,6 +214,24 @@ class MainActivity : AppCompatActivity() {
         val preview = binding.viewFinder.getChildAt(0)
         val previewHeight = preview.height * preview.scaleY
         return ((previewHeight / imageHeight) * y)
+    }
+
+    // TODO remove-this
+    private fun showPreview(bitmap: Bitmap) {
+        if (!::response.isInitialized) return
+        val noseLeft = response.getInt("noseLeft")
+        val noseTop = response.getInt("noseTop")
+        val noseHeight = response.getInt("noseHeight")
+        val noseWidth = response.getInt("noseWidth")
+
+        binding.preview.setImageBitmap(
+            bitmap.apply {
+                Canvas(this).drawRect(
+                    Rect(noseLeft, noseTop, noseWidth + noseLeft, noseTop + noseHeight),
+                    Paint().apply { color = Color.YELLOW }
+                )
+            }
+        )
     }
 
     companion object {

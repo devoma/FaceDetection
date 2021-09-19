@@ -40,4 +40,10 @@
         app:indicatorColor="@color/white"
         app:showAnimationBehavior="outward"
         app:trackThickness="6dp" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/preview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|bottom" />
 </FrameLayout>
