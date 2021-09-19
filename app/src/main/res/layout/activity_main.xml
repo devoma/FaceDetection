@@ -8,6 +8,7 @@
 
     <androidx.camera.view.PreviewView
         android:id="@+id/viewFinder"
+        app:scaleType="fillCenter"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -19,10 +20,37 @@
     <TextView
         android:id="@+id/message"
         android:layout_width="match_parent"
-        android:layout_height="168dp"
+        android:layout_height="50dp"
         android:gravity="center"
+        android:textSize="20sp"
+        android:visibility="visible"
         android:text="@string/make_sure_your_face_is_within_the_circle"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         android:textColor="@color/white" />
 
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progress_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_gravity="top"
+        android:indeterminate="true"
+        android:progressTint="@color/white"
+        android:visibility="visible"
+        app:hideAnimationBehavior="inward"
+        app:indicatorColor="@color/white"
+        app:showAnimationBehavior="outward"
+        app:trackThickness="6dp" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/preview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|bottom" />
+
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/previewEncoded"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom" />
 </FrameLayout>
