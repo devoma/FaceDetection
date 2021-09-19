@@ -2,6 +2,7 @@ package io.devoma.facedetectiontest.misc
 
 import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat.JPEG
+import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.Rect
 import android.util.Base64
@@ -59,4 +60,16 @@ fun Bitmap.base64Encoded(): String {
         byteArray,
         Base64.DEFAULT
     )
+}
+
+/**
+ * Decodes an encoded bitmap.
+ */
+fun String.decodeToBitmap(): Bitmap {
+    val decodedString: ByteArray = Base64.decode(this, Base64.DEFAULT)
+    return BitmapFactory.decodeByteArray(
+        decodedString,
+        0,
+        decodedString.size
+    ).copy(Bitmap.Config.ARGB_8888, true)
 }
