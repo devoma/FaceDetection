@@ -17,22 +17,22 @@ class OvalGraphicOverlay(
     attrs: AttributeSet?
 ) : View(context, attrs) {
 
-    var areaLeft = 185F
+    var areaLeft = 0F
         set(value) {
             field = value
             postInvalidate()
         }
-    var areaTop = 60F
+    var areaTop = 0F
         set(value) {
             field = value
             postInvalidate()
         }
-    var areaWidth = 270F
+    var areaWidth = 0F
         set(value) {
             field = value
             postInvalidate()
         }
-    var areaHeight = 360F
+    var areaHeight = 0F
         set(value) {
             field = value
             postInvalidate()

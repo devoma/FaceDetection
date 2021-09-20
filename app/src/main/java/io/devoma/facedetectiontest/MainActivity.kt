@@ -28,14 +28,27 @@ import org.json.JSONObject
 @androidx.camera.core.ExperimentalUseCaseGroup
 @androidx.camera.lifecycle.ExperimentalUseCaseGroupLifecycle
 class MainActivity : AppCompatActivity() {
-    private val binding by lazy {
+    private val binding by lazy(LazyThreadSafetyMode.NONE) {
         ActivityMainBinding.inflate(layoutInflater)
+    }
+    private val userPreviewViews by lazy {
+        listOf(
+            binding.message,
+            binding.graphicOverlay,
+            binding.preview,
+            binding.previewEncoded
+        )
+    }
+    private val opaqueViews by lazy {
+        listOf(
+            binding.opaqueView,
+            binding.progressIndicator
+        )
     }
     private var disposables: CompositeDisposable? = null
     private lateinit var cameraManager: CameraManager
     private lateinit var response: JSONObject
     private lateinit var frameSize: Size
-    private val imageArrayDeque = ArrayDeque<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +63,7 @@ class MainActivity : AppCompatActivity() {
                 this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
             )
         }
+        opaqueViews.forEach { it.show() } // Just in case someone changed the default xml visibility
     }
 
     override fun onResume() {
@@ -153,7 +167,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initGraphicOverlay() {
-        binding.progressIndicator.show()
+        opaqueViews.forEach { it.show() }
         val requestQueue = Volley.newRequestQueue(this)
         val jsonRequest = JSONObject().apply {
             put("userId", "0688291904")
@@ -166,7 +180,8 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Coordinates applied!", Toast.LENGTH_LONG).show()
             Log.d(TAG, "Response: $response")
             requestQueue.stop()
-            binding.progressIndicator.hide()
+            userPreviewViews.forEach { it.show() }
+            opaqueViews.forEach { it.hide() }
         }
         val request = JsonObjectRequest(
             POST, AWS_API_URL, jsonRequest, listener, null
