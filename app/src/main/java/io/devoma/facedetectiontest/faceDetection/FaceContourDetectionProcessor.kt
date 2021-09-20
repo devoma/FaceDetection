@@ -77,11 +77,11 @@ class FaceContourDetectionProcessor(private val view: OvalGraphicOverlay) :
         imageProxy: ImageProxy
     ) {
         val isFaceDetected = results.isNotEmpty()
-        var faceDetectedInBounds = false
-        var noseDetectedInBounds = false
+        graphicOverlay.clear()
 
         if (isFaceDetected) {
             onFaceDetected.onNext(imageProxy)
+            graphicOverlay.setFaceDetected(true)
 
             // Check if face is with in oval frame bounds
             val face = results.first() // Only single face detection is supported
@@ -93,22 +93,19 @@ class FaceContourDetectionProcessor(private val view: OvalGraphicOverlay) :
             )
             if (graphicOverlay.getOvalFrameRect().contains(faceRect)) {
                 onFaceDetectedInBounds.onNext(imageProxy)
-                faceDetectedInBounds = true
+                graphicOverlay.setFaceDetectedInBounds(true)
             }
             if (checkNoseEnclosed(face)) {
                 onNoseDetectedInBounds.onNext(imageProxy)
-                noseDetectedInBounds = true
+                graphicOverlay.setNoseDetectedInBounds(true)
             }
         } else {
             onNothing.onNext(imageProxy)
+            graphicOverlay.setFaceDetected(false)
+            graphicOverlay.setFaceDetectedInBounds(false)
+            graphicOverlay.setNoseDetectedInBounds(false)
         }
-        graphicOverlay.clear()
 
-        graphicOverlay.onFaceDetected(
-            isFaceDetected,
-            faceDetectedInBounds,
-            noseDetectedInBounds
-        )
         graphicOverlay.postInvalidate()
     }
 
