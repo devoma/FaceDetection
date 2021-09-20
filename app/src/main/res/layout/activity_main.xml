@@ -6,6 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity">
 
+
     <androidx.camera.view.PreviewView
         android:id="@+id/viewFinder"
         app:scaleType="fillCenter"
@@ -14,6 +15,7 @@
 
     <io.devoma.facedetectiontest.views.OvalGraphicOverlay
         android:id="@+id/graphicOverlay"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -23,34 +25,43 @@
         android:layout_height="50dp"
         android:gravity="center"
         android:textSize="20sp"
-        android:visibility="visible"
+        android:visibility="gone"
         android:text="@string/make_sure_your_face_is_within_the_circle"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         android:textColor="@color/white" />
-
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/progress_indicator"
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:layout_gravity="top"
-        android:indeterminate="true"
-        android:progressTint="@color/white"
-        android:visibility="visible"
-        app:hideAnimationBehavior="inward"
-        app:indicatorColor="@color/white"
-        app:showAnimationBehavior="outward"
-        app:trackThickness="6dp" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/preview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="start|bottom" />
-
+        android:layout_gravity="start|bottom"
+        android:visibility="gone" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/previewEncoded"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom" />
+        android:layout_gravity="end|bottom"
+        android:visibility="gone" />
+
+    <View
+        android:id="@+id/opaqueView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:visibility="visible" />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:progressTint="@color/purple_200"
+        android:visibility="visible"
+        app:hideAnimationBehavior="inward"
+        app:indicatorColor="@color/teal_700"
+        app:showAnimationBehavior="outward"
+        app:trackCornerRadius="8dp"
+        app:trackThickness="6dp" />
 </FrameLayout>
