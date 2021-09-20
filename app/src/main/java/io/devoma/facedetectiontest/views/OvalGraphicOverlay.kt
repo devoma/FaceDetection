@@ -127,18 +127,6 @@ class OvalGraphicOverlay(
     }
 
     /**
-     * Called when a face is detected.
-     */
-    fun onFaceDetected(
-        faceDetected: Boolean,
-        faceDetectedInBounds: Boolean,
-        noseDetectedInBounds: Boolean
-    ) {
-        setFaceDetected(faceDetected)
-        setFaceDetectedInBounds(faceDetectedInBounds)
-    }
-
-    /**
      * Returns [RectF] for oval frame
      */
     fun getOvalFrameRect() = RectF().apply {
@@ -178,7 +166,7 @@ class OvalGraphicOverlay(
     /**
      * Set this true whenever a face is detected.
      */
-    private fun setFaceDetected(faceDetected: Boolean) {
+    fun setFaceDetected(faceDetected: Boolean) {
         if (faceDetected) {
             ovalPaint.color = faceDetectedColor
         } else {
@@ -190,7 +178,7 @@ class OvalGraphicOverlay(
     /**
      * Set this true when a face is found to be with in the oval frame boundaries.
      */
-    private fun setFaceDetectedInBounds(faceInBounds: Boolean) {
+    fun setFaceDetectedInBounds(faceInBounds: Boolean) {
         if (faceInBounds) {
             ovalPaint.color = faceDetectedInBoundsColor
             add(
@@ -204,6 +192,13 @@ class OvalGraphicOverlay(
             clear()
         }
         postInvalidate()
+    }
+
+    /**
+     * Set this true when nose is enclosed within the nose frame.
+     */
+    fun setNoseDetectedInBounds(faceInBounds: Boolean) {
+        // TODO do something here. Maybe change nose frame colors
     }
 
     fun isFrontMode() = cameraSelector == CameraSelector.LENS_FACING_FRONT

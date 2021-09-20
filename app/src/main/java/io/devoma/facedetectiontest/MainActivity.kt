@@ -176,14 +176,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setOverlayGraphicPosition(serverResponse: JSONObject) {
-        val areaHeight = serverResponse.getInt("areaHeight").toFloat()
+        var areaHeight = serverResponse.getInt("areaHeight").toFloat() // Not needed anymore
+        var areaTop = serverResponse.getInt("areaTop").toFloat() // Not needed anymore
         val areaWidth = serverResponse.getInt("areaWidth").toFloat()
         val areaLeft = serverResponse.getInt("areaLeft").toFloat()
-        val areaTop = serverResponse.getInt("areaTop").toFloat()
         val noseLeft = serverResponse.getInt("noseLeft").toFloat()
         val noseTop = serverResponse.getInt("noseTop").toFloat()
         val noseHeight = serverResponse.getInt("noseHeight").toFloat()
         val noseWidth = serverResponse.getInt("noseWidth").toFloat()
+
+        // Warning: double check this if anything at the server changes
+        // Use a constant ratio across different devices
+        areaHeight = areaWidth * OVAL_FRAME_RATIO_HEIGHT_MULTIPLIER
+        // Remaining space = Total space available - space occupied by the frame
+        // Frame top and bottom margin = remaining space / 2f
+        areaTop = (frameSize.height - areaHeight) / 2f
 
         binding.graphicOverlay.run {
             this.areaWidth = this@MainActivity.translateX(areaWidth)
@@ -235,6 +242,9 @@ class MainActivity : AppCompatActivity() {
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+
+        // Increase/Decrease to make the oval frame shorter/longer
+        private const val OVAL_FRAME_RATIO_HEIGHT_MULTIPLIER = 4f / 3f
 
         private const val AWS_API_URL =
             "https://3s6irq4jm5.execute-api.us-east-2.amazonaws.com/Prod/challenge/start"
